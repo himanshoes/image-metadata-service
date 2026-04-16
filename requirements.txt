@@ -1,0 +1,12 @@
+# --- Core Application Dependencies ---
+boto3>=1.28.0           # AWS SDK for Python (S3, DynamoDB, Lambda)
+python-dateutil>=2.8.2  # Handling metadata timestamps
+
+# --- Development & Automation ---
+localstack>=3.0.0       # Local cloud stack for testing
+awscli-local>=0.22.0    # Helper for running 'awslocal' commands
+
+# --- Testing Framework ---
+pytest>=7.4.0           # Unit testing framework
+pytest-mock>=3.11.1     # Mocking boto3 calls in unit tests
+requests>=2.31.0        # Testing API Gateway endpoints via HTTP

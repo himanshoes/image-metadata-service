@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  localstack:
+    container_name: localstack
+    image: localstack/localstack:latest
+    ports:
+      - "4566:4566"
+    environment:
+      - DEBUG=1
+      - LOCALSTACK_AUTH_TOKEN=${LOCALSTACK_AUTH_TOKEN}
+      - AWS_DEFAULT_REGION=us-west-2
+      - PERSISTENCE=0
+      - SERVICES=s3,dynamodb,lambda,apigateway # Explicitly tell it what to start
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./init-aws.sh:/etc/localstack/init/ready.d/init-aws.sh"
+      # Move the mount point to /usr/src/app (neutral location)
+      - "./src:/usr/src/app"
