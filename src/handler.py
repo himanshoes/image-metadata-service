@@ -6,7 +6,7 @@ import os
 from boto3.dynamodb.conditions import Attr
 
 
-# 1. Improved Client Setup
+# Client Setup
 def get_client(service, is_resource=False):
     target = boto3.resource if is_resource else boto3.client
 
@@ -30,7 +30,7 @@ def get_client(service, is_resource=False):
 s3 = get_client('s3')
 db = get_client('dynamodb', is_resource=True)
 table = db.Table('ImageMetadata')
-BUCKET_NAME = 'instagram-images'  # <--- Make sure this is here!
+BUCKET_NAME = 'instagram-images'
 
 
 def lambda_handler(event, context):
@@ -48,7 +48,6 @@ def lambda_handler(event, context):
             return delete(event)
         return {"statusCode": 404, "body": json.dumps({"msg": "Not Found"})}
     except Exception as e:
-        # 2. Add this print so you can see what's actually breaking!
         print(f"CRITICAL ERROR: {str(e)}")
         return {"statusCode": 500, "body": json.dumps({"error": str(e)})}
 
@@ -58,10 +57,10 @@ def upload(event):
     img_id = str(uuid.uuid4())
     metadata = body.get('metadata', {})
 
-    # Task 1.1: S3 Upload - Using BUCKET_NAME from global scope
+    # S3 Upload
     s3.put_object(Bucket=BUCKET_NAME, Key=f"{img_id}.jpg", Body=base64.b64decode(body['image_base64']))
 
-    # Task 1.1: DynamoDB Metadata
+    # DynamoDB Metadata
     table.put_item(Item={
         'ImageId': img_id,
         'UserId': metadata.get('user_id'),
@@ -85,7 +84,7 @@ def list_all(event):
 
 def view(event):
     img_id = event['path'].split('/')[-1]
-    # Task 1.3: Generate Pre-signed URL
+    # Generate Pre-signed URL
     url = s3.generate_presigned_url('get_object',
                                     Params={'Bucket': BUCKET_NAME, 'Key': f"{img_id}.jpg"},
                                     ExpiresIn=3600)
